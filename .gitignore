@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Hardhat build output and reports
+/artifacts/
+/cache/
+/coverage/
+/.gas-snapshot
+/snapshots/
+
+# Local deployments (the local chain is wiped on every restart)
+/deployments/localhost.json
+/ignition/deployments/chain-31337/
+
+# Next.js
+/frontend/.next/
+/frontend/out/
+/frontend/next-env.d.ts
+/frontend/*.tsbuildinfo
+
+# Secrets and machine-specific configuration: never commit these
+.env
+.env.*
+!.env.example
+
+# Left behind only when the browser check fails
+/docs/e2e-failure.png
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

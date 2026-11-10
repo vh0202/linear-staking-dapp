@@ -1,0 +1,222 @@
+/*
+ * Design tokens: the single source of truth for colour, depth, shape, type and motion.
+ *
+ *   1. scales that do not depend on the theme, registered with Tailwind directly
+ *   2. colours and shadows, once per theme, as plain custom properties
+ *   3. the wiring that turns (2) into Tailwind utilities (bg-surface, text-ink, shadow-card ...)
+ *
+ * Components use the utilities only; no colour, radius or shadow is written anywhere else.
+ * src/app/tokens.test.ts parses the two theme blocks below and checks every text / background
+ * pair against WCAG AA, so a token change that breaks contrast fails the unit tests.
+ */
+
+/* ------------------------------------------------------------------ 1. scales */
+/* "static": every scale value is emitted, also the ones only RainbowKit's dialogs refer to. */
+@theme static {
+  /* Spacing: one 4 px unit. Margins, paddings and gaps are multiples of it (half steps
+     where optical alignment needs them). */
+  --spacing: 0.25rem;
+
+  /* Radii */
+  --radius-*: initial;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* Type scale (size, line height, tracking) */
+  --text-*: initial;
+  --text-display: 2.75rem;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.035em;
+  --text-headline: 2rem;
+  --text-headline--line-height: 1.1;
+  --text-headline--letter-spacing: -0.03em;
+  --text-title: 1.25rem;
+  --text-title--line-height: 1.25;
+  --text-title--letter-spacing: -0.02em;
+  --text-lead: 1rem;
+  --text-lead--line-height: 1.5;
+  --text-lead--letter-spacing: -0.011em;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.45;
+  --text-body--letter-spacing: -0.006em;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.4;
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1.3;
+  --text-micro--letter-spacing: 0.06em;
+
+  /* Motion: 150-250 ms, one easing for state changes and one for entrances. */
+  --ease-*: initial;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* The default palette is switched off: only the tokens below exist. */
+  --color-*: initial;
+  --shadow-*: initial;
+}
+
+:root {
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 250ms;
+
+  /* Signature gradient, one family: violet -> blue -> aqua. Graphics only (logo, ring, bars).
+     Its three stops are set per theme below, so they hold 3:1 against either background. */
+  --gradient-signature: linear-gradient(120deg, var(--grad-from) 0%, var(--grad-via) 55%, var(--grad-to) 100%);
+
+  /* Its two darker stops carry white text at AA: the primary button. */
+  --cta-from: #6b4df5;
+  --cta-to: #4664f0;
+  --gradient-cta: linear-gradient(120deg, var(--cta-from) 0%, var(--cta-to) 100%);
+  --on-accent: #ffffff;
+
+  /* Soft glows of the signature colours: behind the page, and inside the position card.
+     Their strength is a token per theme, and tokens.test.ts checks text against the tint. */
+  --aura-from: color-mix(in srgb, var(--grad-from) var(--aura-strength), transparent);
+  --aura-to: color-mix(in srgb, var(--grad-to) var(--aura-strength-end), transparent);
+  --aura: radial-gradient(1200px 560px at 14% -200px, var(--aura-from), transparent 62%),
+    radial-gradient(1000px 500px at 92% -220px, var(--aura-to), transparent 60%);
+  --aura-card: radial-gradient(720px 300px at 0% 0%, var(--aura-from), transparent 70%),
+    radial-gradient(620px 280px at 100% 0%, var(--aura-to), transparent 70%);
+  --sheen: linear-gradient(180deg, color-mix(in srgb, #ffffff var(--sheen-strength), transparent), transparent 7rem);
+}
+
+/* ------------------------------------------------------------------ 2. themes */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Neutrals */
+  --bg: #07080c;
+  --surface: #10131b;
+  --surface-raised: #181c27;
+  --surface-sunken: #0a0c12;
+  --line: #212635;
+  --line-strong: #343b50;
+  --text: #f3f4f8;
+  --text-secondary: #a7aec0;
+  --text-tertiary: #8891a8;
+  --text-disabled: #5c6479;
+
+  /* Accent family */
+  --accent: #8470ff;
+  --accent-text: #a698ff;
+  --accent-soft: #181a32;
+  --accent-line: #34316a;
+  --grad-from: #7a5cff;
+  --grad-via: #4f7bff;
+  --grad-to: #2ed3e6;
+
+  /* Semantic: success, pending / warning, error */
+  --success: #3ddc97;
+  --success-soft: #0d2620;
+  --success-line: #1c4a3c;
+  --warning: #f6b94b;
+  --warning-soft: #272014;
+  --warning-line: #4f3f1d;
+  --danger: #ff7b88;
+  --danger-soft: #2c1a22;
+  --danger-line: #55262f;
+
+  /* Depth: layered, soft */
+  --elevation-card: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 1px 2px rgb(0 0 0 / 0.4),
+    0 18px 40px -22px rgb(0 0 0 / 0.75);
+  --elevation-pop: 0 0 0 1px rgb(255 255 255 / 0.06), 0 12px 32px -8px rgb(0 0 0 / 0.7),
+    0 32px 64px -24px rgb(0 0 0 / 0.6);
+  --elevation-cta: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 1px 2px rgb(0 0 0 / 0.4),
+    0 12px 28px -12px rgb(107 77 245 / 0.8);
+  --elevation-glow: 0 0 0 1px rgb(132 112 255 / 0.3), 0 0 28px -6px rgb(132 112 255 / 0.55);
+  /* How strongly the signature colours tint a background at the centre of a glow. */
+  --aura-strength: 26%;
+  --aura-strength-end: 12%;
+  /* A faint highlight along the top of every card. */
+  --sheen-strength: 2.8%;
+  --glow-graphic: drop-shadow(0 0 6px rgb(122 92 255 / 0.55));
+  --scrim: rgb(3 4 8 / 0.64);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f4f5f9;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f1f3f7;
+  --line: #e3e6ed;
+  --line-strong: #c9cfdb;
+  --text: #0c0e14;
+  --text-secondary: #474e60;
+  --text-tertiary: #5d6679;
+  --text-disabled: #838b9c;
+
+  --accent: #5b45e0;
+  --accent-text: #513dcf;
+  --accent-soft: #efedfc;
+  --accent-line: #cdc6f5;
+  --grad-from: #6d4df2;
+  --grad-via: #4a72f5;
+  --grad-to: #0a93ad;
+
+  --success: #0a6c43;
+  --success-soft: #e7f4ee;
+  --success-line: #b5dcc9;
+  --warning: #8a4f00;
+  --warning-soft: #fbf1e0;
+  --warning-line: #ecd3a4;
+  --danger: #bd2238;
+  --danger-soft: #fcebed;
+  --danger-line: #f1c2c8;
+
+  --elevation-card: 0 1px 2px rgb(16 20 40 / 0.05), 0 14px 32px -20px rgb(16 20 40 / 0.2);
+  --elevation-pop: 0 0 0 1px rgb(16 20 40 / 0.06), 0 12px 32px -8px rgb(16 20 40 / 0.18),
+    0 32px 64px -24px rgb(16 20 40 / 0.22);
+  --elevation-cta: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 1px 2px rgb(16 20 40 / 0.2),
+    0 12px 24px -12px rgb(91 69 224 / 0.6);
+  --elevation-glow: 0 0 0 1px rgb(91 69 224 / 0.25), 0 0 24px -6px rgb(91 69 224 / 0.4);
+  --aura-strength: 12%;
+  --aura-strength-end: 9%;
+  --sheen-strength: 0%;
+  --glow-graphic: none;
+  --scrim: rgb(20 24 40 / 0.4);
+}
+
+/* ------------------------------------------------------------------ 3. wiring */
+@theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--surface-raised);
+  --color-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-secondary);
+  --color-ink-3: var(--text-tertiary);
+  --color-ink-disabled: var(--text-disabled);
+
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-text);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-line: var(--accent-line);
+  --color-on-accent: var(--on-accent);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-line: var(--success-line);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-line: var(--warning-line);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-line: var(--danger-line);
+
+  --shadow-card: var(--elevation-card);
+  --shadow-pop: var(--elevation-pop);
+  --shadow-cta: var(--elevation-cta);
+  --shadow-glow: var(--elevation-glow);
+}

@@ -1,0 +1,158 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* Motion. Every animation here is switched off by the reduced-motion rule at the end. */
+@theme {
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-live: live 2s var(--ease-standard) infinite;
+  --animate-rise: rise var(--duration-slow) var(--ease-emphasis) both;
+  --animate-pop: pop var(--duration-slow) var(--ease-emphasis) both;
+  --animate-draw: draw 420ms var(--ease-emphasis) 80ms both;
+  --animate-flash: flash 900ms var(--ease-standard) both;
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes live {
+    0% {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    70%,
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes flash {
+    0% {
+      box-shadow: 0 0 0 0 var(--success-line);
+    }
+    100% {
+      box-shadow: 0 0 0 10px transparent;
+    }
+  }
+}
+
+/* The signature gradient is used sparingly: the logo and the account dot, the primary
+   button, the progress graphics, and a hairline and a soft glow on the position card. */
+@utility bg-signature {
+  background-image: var(--gradient-signature);
+}
+@utility bg-cta {
+  background-color: var(--cta-from);
+  background-image: var(--gradient-cta);
+}
+@utility bg-aura-card {
+  background-image: var(--aura-card);
+}
+@utility bg-sheen {
+  background-image: var(--sheen);
+}
+/* A hairline of the signature gradient that fades out towards both ends. */
+@utility edge-glow {
+  background-image: var(--gradient-signature);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
+}
+@utility glow-graphic {
+  filter: var(--glow-graphic);
+}
+@utility skeleton {
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-sunken);
+  background-image: linear-gradient(90deg, transparent 0%, var(--line) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+@layer base {
+  html {
+    background-color: var(--bg);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bg);
+    background-image: var(--aura);
+    background-repeat: no-repeat;
+    color: var(--text);
+    /* Tabular figures everywhere: no number changes width while it ticks. */
+    font-variant-numeric: tabular-nums;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--on-accent);
+  }
+
+  /* One visible focus style for everything reachable by keyboard. */
+  :where(a, button, input, summary, [tabindex], [role="tab"]):focus-visible {
+    outline: 2px solid var(--accent-text);
+    outline-offset: 2px;
+  }
+
+  button:not(:disabled),
+  [role="tab"] {
+    cursor: pointer;
+  }
+
+  /* While the theme is being switched, colours cross-fade instead of snapping. */
+  [data-theme-switching] *,
+  [data-theme-switching] *::before,
+  [data-theme-switching] *::after {
+    transition:
+      background-color var(--duration-slow) var(--ease-standard),
+      border-color var(--duration-slow) var(--ease-standard),
+      color var(--duration-slow) var(--ease-standard),
+      fill var(--duration-slow) var(--ease-standard),
+      stroke var(--duration-slow) var(--ease-standard) !important;
+  }
+}
+
+/* prefers-reduced-motion: no animation, no transition. Counting numbers and the live
+   ticker are switched off in script (lib/motion.ts). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

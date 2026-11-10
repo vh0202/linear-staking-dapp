@@ -1,0 +1,39 @@
+{
+  "name": "linear-staking-dapp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sample project: ERC-20 staking with linear, time-based rewards (Solidity + Hardhat + Next.js).",
+  "type": "module",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "^3.1.9",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.7",
+    "@types/node": "^22.20.5",
+    "forge-std": "github:foundry-rs/forge-std#v1.17.0",
+    "hardhat": "^3.21.2",
+    "typescript": "~6.0.3",
+    "viem": "^2.57.17"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.6.1"
+  },
+  "scripts": {
+    "postinstall": "node scripts/bootstrap-node.mjs",
+    "compile": "hardhat build",
+    "typecheck": "hardhat build && tsc --noEmit",
+    "test": "hardhat test",
+    "test:ts": "hardhat test nodejs",
+    "test:solidity": "hardhat test solidity",
+    "test:mutation": "node scripts/mutation-check.mjs",
+    "coverage": "hardhat test --coverage",
+    "gas": "hardhat test --gas-stats",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy-local.ts --network localhost",
+    "export-abi": "hardhat run scripts/export-abi.ts",
+    "deploy:sepolia": "hardhat ignition deploy ignition/modules/TestnetDemo.ts --network sepolia --verify",
+    "demo:e2e": "node scripts/demo-e2e.mjs",
+    "frontend:install": "npm --prefix frontend install",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:check": "npm --prefix frontend run typecheck && npm --prefix frontend run lint && npm --prefix frontend test && npm --prefix frontend run build"
+  }
+}
